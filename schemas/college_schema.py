@@ -33,3 +33,30 @@ class EnrollmentSchema(BaseModel):
 class EnrollmentResponse(BaseModel):
     student_id: int
     course_ids: list[int]
+
+
+class UserRegisterSchema(BaseModel):
+    name: str
+    email: EmailStr
+    password: str
+    role: str = "student"
+
+
+class UserLoginSchema(BaseModel):
+    email: EmailStr
+    password: str
+
+
+class UserResponse(BaseModel):
+    id: int
+    name: str
+    email: EmailStr
+    role: str
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    user: UserResponse
