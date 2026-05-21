@@ -13,6 +13,14 @@ class StudentResponse(StudentSchema):
     model_config = ConfigDict(from_attributes=True)
 
 
+class PaginatedStudentsResponse(BaseModel):
+    items: list[StudentResponse]
+    page: int
+    page_size: int
+    total_items: int
+    total_pages: int
+
+
 class CourseSchema(BaseModel):
     name: str
     description: str
@@ -23,6 +31,14 @@ class CourseResponse(CourseSchema):
     id: int
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class PaginatedCoursesResponse(BaseModel):
+    items: list[CourseResponse]
+    page: int
+    page_size: int
+    total_items: int
+    total_pages: int
 
 
 class EnrollmentSchema(BaseModel):

@@ -1,10 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
 from db.database import get_db
 from schemas.college_schema import (
     EnrollmentResponse,
     EnrollmentSchema,
+    PaginatedStudentsResponse,
     StudentResponse,
     StudentSchema,
 )
@@ -14,6 +15,7 @@ from services.student_service import (
     delete_student_service,
     enroll_student_service,
     get_enrollments_service,
+    get_paginated_students_service,
     get_students_service,
     update_student_service,
 )
@@ -41,6 +43,16 @@ def get_students(
     current_user=Depends(get_current_user),
 ):
     return get_students_service(db)
+
+
+@router.get("/admin/students", response_model=PaginatedStudentsResponse)
+def get_paginated_students(
+    page: int = Query(1, ge=1),
+    page_size: int = Query(10, ge=1, le=100),
+    db: Session = Depends(get_db),
+    current_user=Depends(require_admin),
+):
+    return get_paginated_students_service(page, page_size, db)
 
 
 @router.put("/students/{student_id}", response_model=StudentResponse)

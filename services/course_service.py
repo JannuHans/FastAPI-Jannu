@@ -25,6 +25,20 @@ def get_courses_service(db: Session):
     return db.query(Course).all()
 
 
+def get_paginated_courses_service(page: int, page_size: int, db: Session):
+    total_items = db.query(Course).count()
+    offset = (page - 1) * page_size
+    courses = db.query(Course).offset(offset).limit(page_size).all()
+
+    return {
+        "items": courses,
+        "page": page,
+        "page_size": page_size,
+        "total_items": total_items,
+        "total_pages": (total_items + page_size - 1) // page_size,
+    }
+
+
 def update_course_service(course_id: int, course: CourseSchema, db: Session):
     db_course = db.query(Course).filter(Course.id == course_id).first()
 

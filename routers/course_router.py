@@ -1,13 +1,14 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
 from db.database import get_db
-from schemas.college_schema import CourseResponse, CourseSchema
+from schemas.college_schema import CourseResponse, CourseSchema, PaginatedCoursesResponse
 from services.auth_service import get_current_user, require_admin
 from services.course_service import (
     create_course_service,
     delete_course_service,
     get_courses_service,
+    get_paginated_courses_service,
     update_course_service,
 )
 
@@ -34,6 +35,16 @@ def get_courses(
     current_user=Depends(get_current_user),
 ):
     return get_courses_service(db)
+
+
+@router.get("/admin/courses", response_model=PaginatedCoursesResponse)
+def get_paginated_courses(
+    page: int = Query(1, ge=1),
+    page_size: int = Query(10, ge=1, le=100),
+    db: Session = Depends(get_db),
+    current_user=Depends(require_admin),
+):
+    return get_paginated_courses_service(page, page_size, db)
 
 
 @router.put("/courses/{course_id}", response_model=CourseResponse)

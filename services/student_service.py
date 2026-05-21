@@ -25,6 +25,20 @@ def get_students_service(db: Session):
     return db.query(Student).all()
 
 
+def get_paginated_students_service(page: int, page_size: int, db: Session):
+    total_items = db.query(Student).count()
+    offset = (page - 1) * page_size
+    students = db.query(Student).offset(offset).limit(page_size).all()
+
+    return {
+        "items": students,
+        "page": page,
+        "page_size": page_size,
+        "total_items": total_items,
+        "total_pages": (total_items + page_size - 1) // page_size,
+    }
+
+
 def update_student_service(student_id: int, student: StudentSchema, db: Session):
     db_student = db.query(Student).filter(Student.id == student_id).first()
 
